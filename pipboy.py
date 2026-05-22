@@ -2,64 +2,38 @@ import pygame
 import random
 import math
 import menus
+from assets import Assets
 from moviepy import VideoFileClip
 
 
 class PipBoy:
-    def __init__(
-        self,
-        width=800,
-        height=480,
-        framerate=60,
-        menu_tabs=[
-            menus.StatusTab(),
-            menus.InventoryTab(),
-            menus.DataTab(),
-            menus.MapTab(),
-            menus.RadioTab(),
-        ],
-    ):
+    def __init__(self, width=800, height=480, framerate=60, menu_tabs=None):
         self.width = width
         self.height = height
-
+        self.assets = Assets()
+        if menu_tabs is None:
+            menu_tabs=[
+                menus.StatusTab("STAT", self.assets),
+                menus.InventoryTab("INV", self.assets),
+                menus.DataTab("DATA", self.assets),
+                menus.MapTab("MAP", self.assets),
+                menus.RadioTab("RADIO", self.assets)]   
+            
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.start_image = pygame.image.load("PipBoyStart (1).png").convert()
-        self.start_image = pygame.transform.scale(
-            self.start_image, self.screen.get_size()
-        )
+        self.start_image = pygame.transform.scale(self.start_image, self.screen.get_size())
 
-        self.font_18 = pygame.font.Font("monofonto.ttf", 18)
-        self.font_24 = pygame.font.Font("monofonto.ttf", 24)
-        self.font_36 = pygame.font.Font("monofonto.ttf", 36)
         self.green_text = (2, 255, 2)
 
-        self.typing_sound_1 = pygame.mixer.Sound(
-            file="resources/sounds/ui_hacking_charsingle_01.wav"
-        )
-        self.typing_sound_2 = pygame.mixer.Sound(
-            file="resources/sounds/ui_hacking_charsingle_02.wav"
-        )
-        self.typing_sound_3 = pygame.mixer.Sound(
-            file="resources/sounds/ui_hacking_charsingle_03.wav"
-        )
-        self.typing_sound_4 = pygame.mixer.Sound(
-            file="resources/sounds/ui_hacking_charsingle_04.wav"
-        )
-        self.typing_sound_5 = pygame.mixer.Sound(
-            file="resources/sounds/ui_hacking_charsingle_05.wav"
-        )
-        self.typing_sound_6 = pygame.mixer.Sound(
-            file="resources/sounds/ui_hacking_charsingle_06.wav"
-        )
-        self.menu_scroll = pygame.mixer.Sound(
-            file="resources/sounds/ui_pipboy_tab.wav"
-        )
-        self.cursor_scroll = pygame.mixer.Sound(
-            file="resources/sounds/ui_menu_focus.wav"
-        )
-        self.menu_select = pygame.mixer.Sound(
-            file="resources/sounds/ui_pipboy_select.wav"
-            )
+        self.typing_sound_1 = self.assets.sounds["typing1"]
+        self.typing_sound_2 = self.assets.sounds["typing2"]
+        self.typing_sound_3 = self.assets.sounds["typing3"]
+        self.typing_sound_4 = self.assets.sounds["typing4"]
+        self.typing_sound_5 = self.assets.sounds["typing5"]
+        self.typing_sound_6 = self.assets.sounds["typing6"]
+        self.menu_scroll    = self.assets.sounds["menu"]
+        self.cursor_scroll  = self.assets.sounds["cursor"]
+        self.menu_select    = self.assets.sounds["select"]
 
         self.scanline_surface = pygame.Surface(
             (self.width, self.height), pygame.SRCALPHA
@@ -225,9 +199,9 @@ class PipBoy:
 
         # Pre-render all lines once
         line_surfaces = [
-            self.font_18.render(text, True, self.green_text) for text in lines
+            self.assets.fonts["small"].render(text, True, self.green_text) for text in lines
         ]
-        line_height = self.font_18.get_linesize()
+        line_height = self.assets.fonts["small"].get_linesize()
         block_height = len(line_surfaces) * line_height
 
         # Find max line width to center the whole block
@@ -315,12 +289,12 @@ class PipBoy:
         for line_index, line in enumerate(boot_text):
             pos_x = 0
 
-            _, char_height = self.font_18.size("A")
+            _, char_height = self.assets.fonts["small"].size("A")
 
             for char in line:
                 self.event_handler()
 
-                char_width, _ = self.font_18.size(char)
+                char_width, _ = self.assets.fonts["small"].size(char)
                 char_x = 15 + pos_x
                 char_y = 10 + line_index * (char_height + 4)
 
@@ -339,7 +313,7 @@ class PipBoy:
                 pygame.time.delay(blink_off_ms)
 
                 # draw the character
-                char_surface = self.font_18.render(char, True, self.green_text)
+                char_surface = self.assets.fonts["small"].render(char, True, self.green_text)
                 self.screen.blit(char_surface, (char_x, char_y))
                 self.screen.blit(self.scanline_surface, (0, 0))
                 pygame.display.flip()
@@ -389,8 +363,8 @@ class PipBoy:
             self.menu_index,
             self.submenu_index,
             self.green_text,
-            self.font_36,
-            self.font_24,
+            self.assets.fonts["large"],
+            self.assets.fonts["medium"],
         )
 
         h = self.height
@@ -449,7 +423,7 @@ class PipBoy:
     def run_loop(self):
         running = True
         bootup_done = False
-
+        
         if not bootup_done:
             self.show_start_screen()
             self.scrolling_memory_log()
@@ -467,8 +441,8 @@ class PipBoy:
                 self.menu_index,
                 self.submenu_index,
                 self.green_text,
-                self.font_36,
-                self.font_24,
+                self.assets.fonts["large"],
+                self.assets.fonts["medium"],
             )
 
             self.screen.blit(
