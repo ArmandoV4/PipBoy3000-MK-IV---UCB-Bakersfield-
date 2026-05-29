@@ -10,30 +10,30 @@ class PipBoy:
     def __init__(self, width=800, height=480, framerate=60, menu_tabs=None):
         self.width = width
         self.height = height
+        self.screen = pygame.display.set_mode((self.width, self.height))
         self.assets = Assets()
         if menu_tabs is None:
-            menu_tabs=[
+            menu_tabs = [
                 menus.StatusTab("STAT", self.assets),
                 menus.InventoryTab("INV", self.assets),
                 menus.DataTab("DATA", self.assets),
                 menus.MapTab("MAP", self.assets),
-                menus.RadioTab("RADIO", self.assets)]   
-            
-        self.screen = pygame.display.set_mode((self.width, self.height))
+                menus.RadioTab("RADIO", self.assets),
+            ]
         self.start_image = pygame.image.load("PipBoyStart (1).png").convert()
-        self.start_image = pygame.transform.scale(self.start_image, self.screen.get_size())
-
+        self.start_image = pygame.transform.scale(
+            self.start_image, self.screen.get_size()
+        )
         self.green_text = (2, 255, 2)
-
         self.typing_sound_1 = self.assets.sounds["typing1"]
         self.typing_sound_2 = self.assets.sounds["typing2"]
         self.typing_sound_3 = self.assets.sounds["typing3"]
         self.typing_sound_4 = self.assets.sounds["typing4"]
         self.typing_sound_5 = self.assets.sounds["typing5"]
         self.typing_sound_6 = self.assets.sounds["typing6"]
-        self.menu_scroll    = self.assets.sounds["menu"]
-        self.cursor_scroll  = self.assets.sounds["cursor"]
-        self.menu_select    = self.assets.sounds["select"]
+        self.menu_scroll = self.assets.sounds["menu"]
+        self.cursor_scroll = self.assets.sounds["cursor"]
+        self.menu_select = self.assets.sounds["select"]
 
         self.scanline_surface = pygame.Surface(
             (self.width, self.height), pygame.SRCALPHA
@@ -88,22 +88,35 @@ class PipBoy:
                     self.menu_scroll.play()
 
                 elif event.key == pygame.K_RETURN:
-                    self.tabs[self.menu_index].update_selected_submenu(
-                        self.submenu_index, "K_RETURN"
+                    self.tabs[self.menu_index].submenu_input(
+                        self.submenu_index, pygame.K_RETURN
                     )
                     self.menu_select.play()
 
                 elif event.key == pygame.K_q:
-                    self.tabs[self.menu_index].update_selected_submenu(
-                        self.submenu_index, "K_q"
+                    self.tabs[self.menu_index].submenu_input(
+                        self.submenu_index, pygame.K_q
                     )
                     self.cursor_scroll.play()
 
                 elif event.key == pygame.K_e:
-                    self.tabs[self.menu_index].update_selected_submenu(
-                        self.submenu_index, "K_e"
+                    self.tabs[self.menu_index].submenu_input(
+                        self.submenu_index, pygame.K_e
                     )
                     self.cursor_scroll.play()
+
+                elif event.key == pygame.K_a:
+                    self.tabs[self.menu_index].submenu_input(
+                        self.submenu_index, pygame.K_a
+                    )
+
+                elif event.key == pygame.K_d:
+                    self.tabs[self.menu_index].submenu_input(
+                        self.submenu_index, pygame.K_d
+                    )
+
+            if event.type == self.tabs[4].tabs_list[0].MUSIC_END:
+                self.tabs[4].tabs_list[0].next_song()
 
     def create_scanlines(self):
         self.scanline_surface.fill((0, 0, 0, 0))
@@ -199,7 +212,8 @@ class PipBoy:
 
         # Pre-render all lines once
         line_surfaces = [
-            self.assets.fonts["small"].render(text, True, self.green_text) for text in lines
+            self.assets.fonts["small"].render(text, True, self.green_text)
+            for text in lines
         ]
         line_height = self.assets.fonts["small"].get_linesize()
         block_height = len(line_surfaces) * line_height
@@ -313,7 +327,9 @@ class PipBoy:
                 pygame.time.delay(blink_off_ms)
 
                 # draw the character
-                char_surface = self.assets.fonts["small"].render(char, True, self.green_text)
+                char_surface = self.assets.fonts["small"].render(
+                    char, True, self.green_text
+                )
                 self.screen.blit(char_surface, (char_x, char_y))
                 self.screen.blit(self.scanline_surface, (0, 0))
                 pygame.display.flip()
@@ -423,8 +439,9 @@ class PipBoy:
     def run_loop(self):
         running = True
         bootup_done = False
-        
-        if not bootup_done:
+        debug = True
+
+        if not bootup_done and not debug:
             self.show_start_screen()
             self.scrolling_memory_log()
             self.bootup_sequence()
