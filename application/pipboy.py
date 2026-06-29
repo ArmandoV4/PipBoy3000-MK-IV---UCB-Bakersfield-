@@ -3,6 +3,7 @@ from resources.assets import Assets
 import utils.constants as constants
 from application.screen_manager import ScreenManager
 from application.input_manager import InputManager
+from application.arduino_manager import ArduinoManager
 
 """
 Contains the main application controller that will handle events,
@@ -40,17 +41,20 @@ class PipBoy:
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.assets: Assets = Assets()
         self.screen_manager = ScreenManager(self.assets)
-        self.input_manager = InputManager(serial_port, baud_rate)
+        self.input_manager = InputManager()
+        self.arduino_manager = ArduinoManager(serial_port, baud_rate)
         self.running: bool = True
         self.dt: float = 0.0
+        self.data: dict [str, list[str]] = self.arduino_manager.serial_reader()
 
     def event_handler(self) -> None:
         """Handles all events that are queued. Takes userevents and keyboard events and passes 
         them into the input manager to be converted into PipBoy navigation events. Passes remaining 
         events into the screen managers event handler.
         """
+        self.data = self.arduino_manager.serial_reader()
         events: list[pygame.event.Event] = pygame.event.get()
-        self.input_manager.process_inputs(events)
+        self.input_manager.process_inputs(self.data["INPUTS"], events)
         for event in events:
             if event.type == pygame.QUIT:
                 self.running = False

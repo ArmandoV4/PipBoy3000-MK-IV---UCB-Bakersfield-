@@ -2,7 +2,7 @@ import serial
 
 """ Contains the Arduino handler, responsible for monitoring the serial port.
 """
-class ArduinoHandler:
+class ArduinoManager:
     def __init__(self, port: str, baud_rate: int) -> None:
         """ Initializes the serial monitor, ensuring that a failed connection does not result in an application crash.
 
@@ -11,6 +11,8 @@ class ArduinoHandler:
             baud_rate (int): Arduino baud rate
         """
         self.serial_monitor: serial.Serial | None = None
+        self.input_filter: str = "INPUT:"
+        self.location_filter: str = "LOCATION_DATA:"
         try:
             self.serial_monitor = serial.Serial(port, baud_rate)
             print("Connection Successful")
@@ -19,18 +21,32 @@ class ArduinoHandler:
             print("Connection Failed")
         
 
-    def serial_reader(self) -> list[str]:
-        """ Reads and converts serial monitor into strings
+    def serial_reader(self) -> dict[str, list[str]]:
+        """Reads and stores serial monitor data
 
         Returns:
-            list[str]: list of string inputs
+            dict[str, list[str]]: A dictionary with keywords describing the kind of data stored in the dict
         """
+
         if self.serial_monitor is None:
-            return []
-        events: list[str] = []
+            return {}
         
+        inputs: list[str] = []
+        gps: list[str] = []
         while self.serial_monitor.in_waiting:
-            events.append(self.serial_monitor.readline().decode().strip())
+            serial_line = self.serial_monitor.readline().decode().strip()
+            print(serial_line)
+
+            if serial_line.startswith(self.input_filter):
+                inputs.append(serial_line.removeprefix(self.input_filter))
+            elif serial_line.startswith(self.location_filter):
+                gps.append(serial_line.removeprefix(self.location_filter))
         
-        return events
+        data : dict[str, list[str]] = {
+            "GPS" : gps,
+            "INPUTS" : inputs,
+        }
+
+        print(data)
+        return data 
     

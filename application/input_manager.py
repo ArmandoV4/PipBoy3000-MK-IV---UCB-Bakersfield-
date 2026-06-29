@@ -1,5 +1,4 @@
 import pygame
-from application.arduino_manager import ArduinoHandler
 from utils.events import SCROLL_DOWN, SCROLL_UP, SELECT, NEXT_SUBMENU, PREVIOUS_SUBMENU, NEXT_MENU, PREVIOUS_MENU
 
 """Contains the input manager, responsible for converting keyboard and rotary 
@@ -7,12 +6,8 @@ encoder inputs into general PipBoy navigation events.
 """
 
 class InputManager:
-    def __init__(self, serial_port: str, baud_rate: int) -> None:
+    def __init__(self) -> None:
         """ Initialized dictionaries that map rotary encoder and keyboard inputs into PipBoy navigation events. Also initializes the Arduino manager. 
-
-        Args:
-            serial_port (str): Arduino serial port
-            baud_rate (int): Arduino baud rate
         """
         self.arduino_inputs: dict[str, int] = {
             'ENC1_CW'       : SCROLL_DOWN,
@@ -35,8 +30,6 @@ class InputManager:
             pygame.K_RETURN : SELECT,
             pygame.K_ESCAPE : pygame.QUIT
         }
-
-        self.arduino_handler = ArduinoHandler(serial_port, baud_rate)
         
 
     def post_action(self, action: int) -> None:
@@ -48,15 +41,13 @@ class InputManager:
         pygame.event.post(pygame.event.Event(action))
 
     
-    def process_inputs(self, events: list[pygame.event.Event]) -> None:
+    def process_inputs(self, inputs: list[str], events: list[pygame.event.Event]) -> None:
         """ Responsible for queuing rotary encoder navigation events and converting keyboard inputs into navigation events. 
 
         Args:
             events (list[pygame.event.Event]): list of keyboard events that get converted into navigation events
         """
-
-        arduino_input = self.arduino_handler.serial_reader()
-        for input_event in arduino_input:
+        for input_event in inputs:
             action = self.arduino_inputs.get(input_event)
             if action is not None:
                 self.post_action(action)

@@ -24,10 +24,10 @@ void updateGPS() {
 
     if (gps.location.isValid()) {
       Serial.print("LOCATION_DATA:");
-      Serial.print("(LAT: ");
+      Serial.print("(");
       Serial.print(gps.location.lat(), 6);
 
-      Serial.print(", LONG: ");
+      Serial.print(",");
       Serial.print(gps.location.lng(), 6);
       Serial.print(")");
 

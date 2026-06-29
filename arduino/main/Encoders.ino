@@ -54,12 +54,12 @@ void updateEncoders() {
   long new_position2 = rotary2.read();
   long new_position3 = rotary3.read();
   bool current_button_state = digitalRead(sw_pin1);
-  encoder_tracker(rotary1, new_position1, last_position1, "ENC1_CW", "ENC1_CCW");
-  encoder_tracker(rotary2, new_position2, last_position2, "ENC2_CW", "ENC2_CCW");
-  encoder_tracker(rotary3, new_position3, last_position3, "ENC3_CW", "ENC3_CCW");
+  encoder_tracker(rotary1, new_position1, last_position1, "INPUT:ENC1_CW", "INPUT:ENC1_CCW");
+  encoder_tracker(rotary2, new_position2, last_position2, "INPUT:ENC2_CW", "INPUT:ENC2_CCW");
+  encoder_tracker(rotary3, new_position3, last_position3, "INPUT:ENC3_CW", "INPUT:ENC3_CCW");
 
   if (current_button_state == LOW && button_tracker == HIGH) {
-    Serial.println("ENC1_PRESS");
+    Serial.println("INPUT:ENC1_PRESS");
   }
 
   button_tracker = current_button_state;
