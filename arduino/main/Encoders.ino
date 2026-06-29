@@ -1,6 +1,4 @@
 #include <Encoder.h>
-
-// first encoder constants
 const int clk_pin1 = 2;
 const int dt_pin1 = 3;
 const int sw_pin1 = 4;
@@ -25,6 +23,20 @@ long last_position3 = 0;
 const int counts_per_click = 4;
 bool button_tracker = HIGH;
 
+void setupEncoders() {
+  // first encoder constants
+
+  pinMode(sw_pin1, INPUT_PULLUP);
+
+  rotary1.write(0);
+  rotary2.write(0);
+  rotary3.write(0);
+  last_position1 = 0;
+  last_position2 = 0;
+  last_position3 = 0;
+
+}
+
 void encoder_tracker(Encoder &rotary_encoder, long &new_position, long &last_position, const char *cwmessage, const char *ccwmessage) {
   if (new_position >= last_position + counts_per_click) {
     Serial.println(ccwmessage);
@@ -37,20 +49,7 @@ void encoder_tracker(Encoder &rotary_encoder, long &new_position, long &last_pos
   }
 }
 
-void setup() {
-  Serial.begin(9600);
-
-  pinMode(sw_pin1, INPUT_PULLUP);
-
-  rotary1.write(0);
-  rotary2.write(0);
-  rotary3.write(0);
-  last_position1 = 0;
-  last_position2 = 0;
-  last_position3 = 0;
-}
-
-void loop() {
+void updateEncoders() {
   long new_position1 = rotary1.read();
   long new_position2 = rotary2.read();
   long new_position3 = rotary3.read();

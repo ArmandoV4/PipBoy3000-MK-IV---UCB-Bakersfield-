@@ -1,0 +1,37 @@
+#include <TinyGPSPlus.h>
+#include <SoftwareSerial.h> 
+
+static const int GPS_RX_Pin = A0, GPS_TX_Pin = A1;
+
+static const uint32_t GPSBaud = 9600;   
+
+TinyGPSPlus gps;
+
+SoftwareSerial GPS(GPS_RX_Pin, GPS_TX_Pin);    
+
+void setupGPS() {
+  GPS.begin(9600);
+}
+
+void updateGPS() {
+  while (GPS.available() > 0) {
+    gps.encode(GPS.read());
+  }
+
+  static unsigned long lastPrintTime = 0;
+
+  if (millis() - lastPrintTime >= 1000) {
+    lastPrintTime = millis();
+
+    if (gps.location.isValid()) {
+      Serial.print("LAT: ");
+      Serial.print(gps.location.lat(), 6);
+
+      Serial.print(", LONG: ");
+      Serial.print(gps.location.lng(), 6);
+
+      Serial.println();
+
+    }
+  }
+}
