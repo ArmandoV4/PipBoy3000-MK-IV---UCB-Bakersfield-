@@ -1,11 +1,12 @@
-__pycache__/menus.cpython-313.pyc
-__pycache__/pipboy.cpython-313.pyc
-__pycache__/submenus.cpython-313.pyc
-__pycache__/assets.cpython-313.pyc
-__pycache__/menus.cpython-313.pyc
-__pycache__/pipboy.cpython-313.pyc
-__pycache__/submenus.cpython-313.pyc
-__pycache__/submenus.cpython-313.pyc
-__pycache__/pipboy.cpython-313.pyc
-__pycache__/menus.cpython-313.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.env
 
+resources/music/*
+resources/sounds/*
+!resources/music/README.md
+!resources/music/.gitkeep
+!resources/sounds/README.md
+!resources/sounds/.gitkeep
