@@ -1,7 +1,7 @@
 import pygame
 from collections.abc import Sized
 from resources.assets import Assets
-from utils.constants import TOP_EDGE
+from utils.constants import TOP_EDGE, RIGHT_EDGE, BOTTOM_EDGE, LEFT_EDGE
 
 """Contains an abstract class for each submenu and its universal methods.
 """
@@ -22,6 +22,8 @@ class Submenu:
             + self.assets.fonts["large"].get_linesize()
             + self.assets.fonts["medium"].get_linesize()
         )
+        self.width: int = RIGHT_EDGE - LEFT_EDGE
+        self.height: int = BOTTOM_EDGE - self.working_area_edge
 
     def event_handler(self, event: pygame.event.Event) -> None:
         """Event handler method supposed to be implemented in all instances of a submenu

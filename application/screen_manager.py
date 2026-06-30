@@ -5,6 +5,7 @@ from screens.screens import Screen
 from screens.scrolling_text_screen import ScrollingTextScreen
 from screens.typewriter_text_screen import TypewriterTextScreen
 from screens.menu_screen import MenuScreen
+from application.gps_manager import GPSManager
 
 """
 The screen manager will contain the screens for the pipboy,
@@ -13,17 +14,18 @@ and pass events to the displayed screen
 """
 
 class ScreenManager:
-    def __init__(self, assets: Assets) -> None:
+    def __init__(self, assets: Assets, gps_manager : GPSManager) -> None:
         """Initializes a dictionary containing the different screens and the starting screen.
 
         Args:
             assets (Assets): Assets module passed through by the PipBoy
         """
         self.assets: Assets = assets
+        self.gps_manager = gps_manager
         self.screens: dict[str, Screen] = {
             'scrollingtext'     : ScrollingTextScreen(self.assets),
             'typewritertext'    : TypewriterTextScreen(self.assets),
-            'menuscreen'        : MenuScreen(self.assets),
+            'menuscreen'        : MenuScreen(self.assets, self.gps_manager),
         }
         self.current_screen: str = 'scrollingtext'
 

@@ -2,8 +2,8 @@ import pygame
 from pygame.event import Event
 from resources.assets import Assets
 from tabs.submenu import Submenu
-from utils.constants import LEFT_EDGE, RIGHT_EDGE, BOTTOM_EDGE, PIPBOY_GREEN
-from utils.events import SCROLL_UP, SCROLL_DOWN, SELECT
+from utils.constants import LEFT_EDGE, PIPBOY_GREEN
+from utils.events import SCROLL_UP, SCROLL_DOWN
 
 
 class Special(Submenu):
@@ -47,8 +47,6 @@ class Special(Submenu):
                 "desc": "Luck is a measurement of your general good fortune, and affects the recharge rate of Critical Hits.",
             },
         ]
-        self.width: int = RIGHT_EDGE - LEFT_EDGE
-        self.height: int = BOTTOM_EDGE - self.working_area_edge
         self.special_surface: pygame.Surface = self.generate_special_surface()
 
     def event_handler(self, event: Event) -> None:

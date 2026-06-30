@@ -41,20 +41,27 @@ class PipBoy:
         )
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.assets: Assets = Assets()
-        self.screen_manager = ScreenManager(self.assets)
         self.arduino_manager = ArduinoManager(serial_port, baud_rate, timeout)
         self.input_manager = InputManager()
         self.gps_manager = GPSManager()
+        self.screen_manager = ScreenManager(self.assets, self.gps_manager)
         self.running: bool = True
         self.dt: float = 0.0
-        self.data: dict [str, list[str]] = self.arduino_manager.serial_reader()
+        self.data: dict [str, list[str]] = {}
+
+    def process_data(self) -> None:
+        """ Processes data sent by the arduino and stores it in self.data to be accessed by other parts of the Pipboy
+        Keys for self.data:
+        'GPS' : Contains position data for GPS manager
+        'INPUTS' Contains input data to be converted by the Input Managers
+        """
+        self.data = self.arduino_manager.serial_reader()
 
     def event_handler(self) -> None:
         """Handles all events that are queued. Takes userevents and keyboard events and passes 
         them into the input manager to be converted into PipBoy navigation events. Passes remaining 
         events into the screen managers event handler.
         """
-        self.data = self.arduino_manager.serial_reader()
         events: list[pygame.event.Event] = pygame.event.get()
         self.input_manager.process_inputs(self.data.get("INPUTS"), events)
         for event in events:
@@ -65,9 +72,9 @@ class PipBoy:
 
     def update(self) -> None:
         """Updates the time between frames. Calls the update function of the screen manager 
-        to update any time related visuals/effects
+        to update any time related visuals/effects. Also updates the current position of the user.
         """
-        self.gps_manager.update(self.data.get("GPS"))
+        self.gps_manager.update_position(self.data.get("GPS"))
         self.dt = self.clock.tick(self.framerate) / 1000
         self.screen_manager.update(self.dt)
 
@@ -81,11 +88,13 @@ class PipBoy:
 
     def run(self) -> None:
         """Contains the main loop for the Pipboy. Runs as follows:
-        1. Handles events such as user inputs
-        2. Updates the clock and any dt based effect
-        3. Renders the current screen to the display
+        1. Convert all data sent by the Arduino through serial into usable information for the PipBoy
+        2. Handles events such as user inputs
+        3. Updates the clock and any dt based effect, position
+        4. Renders the current screen to the display
         """
         while self.running:
+            self.process_data()
             self.event_handler()
             self.update()
             self.render()
