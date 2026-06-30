@@ -4,6 +4,7 @@ import utils.constants as constants
 from application.screen_manager import ScreenManager
 from application.input_manager import InputManager
 from application.arduino_manager import ArduinoManager
+from application.gps_manager import GPSManager
 
 """
 Contains the main application controller that will handle events,
@@ -13,7 +14,7 @@ drawing to the screen, and updating modules
 
 class PipBoy:
     def __init__(
-        self, width: int, height: int, framerate: int, serial_port: str, baud_rate: int
+        self, width: int, height: int, framerate: int, serial_port: str, baud_rate: int, timeout: float
     ) -> None:
         """__init__ initializes the main PipBoy modules. It initialized the following
         - pygame display module
@@ -41,8 +42,9 @@ class PipBoy:
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.assets: Assets = Assets()
         self.screen_manager = ScreenManager(self.assets)
+        self.arduino_manager = ArduinoManager(serial_port, baud_rate, timeout)
         self.input_manager = InputManager()
-        self.arduino_manager = ArduinoManager(serial_port, baud_rate)
+        self.gps_manager = GPSManager()
         self.running: bool = True
         self.dt: float = 0.0
         self.data: dict [str, list[str]] = self.arduino_manager.serial_reader()
@@ -54,7 +56,7 @@ class PipBoy:
         """
         self.data = self.arduino_manager.serial_reader()
         events: list[pygame.event.Event] = pygame.event.get()
-        self.input_manager.process_inputs(self.data["INPUTS"], events)
+        self.input_manager.process_inputs(self.data.get("INPUTS"), events)
         for event in events:
             if event.type == pygame.QUIT:
                 self.running = False
@@ -65,6 +67,7 @@ class PipBoy:
         """Updates the time between frames. Calls the update function of the screen manager 
         to update any time related visuals/effects
         """
+        self.gps_manager.update(self.data.get("GPS"))
         self.dt = self.clock.tick(self.framerate) / 1000
         self.screen_manager.update(self.dt)
 

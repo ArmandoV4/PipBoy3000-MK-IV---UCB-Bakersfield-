@@ -3,7 +3,7 @@ import serial
 """ Contains the Arduino handler, responsible for monitoring the serial port.
 """
 class ArduinoManager:
-    def __init__(self, port: str, baud_rate: int) -> None:
+    def __init__(self, port: str, baud_rate: int, time: float) -> None:
         """ Initializes the serial monitor, ensuring that a failed connection does not result in an application crash.
 
         Args:
@@ -14,7 +14,7 @@ class ArduinoManager:
         self.input_filter: str = "INPUT:"
         self.location_filter: str = "LOCATION_DATA:"
         try:
-            self.serial_monitor = serial.Serial(port, baud_rate)
+            self.serial_monitor = serial.Serial(port, baud_rate, timeout=time)
             print("Connection Successful")
         except serial.SerialException:
             self.serial_monitor = None

@@ -33,8 +33,5 @@ void updateGPS() {
 
       Serial.println();
     }
-    else {
-      Serial.println("NO_SIGNAL");
-    }
   }
 }

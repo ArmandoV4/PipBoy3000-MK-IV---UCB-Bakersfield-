@@ -9,6 +9,7 @@ These values are intended to be immutable.
 # SERIAL_PORT: str = '/dev/ttyACM0' for raspberry pi
 SERIAL_PORT: str = 'COM3'
 BAUD_RATE: int = 9600
+TIMEOUT: float = 0.05
 
 # Screen constants
 SCREEN_WIDTH: int = 800

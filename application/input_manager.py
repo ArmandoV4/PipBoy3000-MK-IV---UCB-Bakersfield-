@@ -41,16 +41,17 @@ class InputManager:
         pygame.event.post(pygame.event.Event(action))
 
     
-    def process_inputs(self, inputs: list[str], events: list[pygame.event.Event]) -> None:
+    def process_inputs(self, inputs: list[str] | None, events: list[pygame.event.Event]) -> None:
         """ Responsible for queuing rotary encoder navigation events and converting keyboard inputs into navigation events. 
 
         Args:
             events (list[pygame.event.Event]): list of keyboard events that get converted into navigation events
         """
-        for input_event in inputs:
-            action = self.arduino_inputs.get(input_event)
-            if action is not None:
-                self.post_action(action)
+        if inputs is not None:
+            for input_event in inputs:
+                action = self.arduino_inputs.get(input_event)
+                if action is not None:
+                    self.post_action(action)
 
 
         for event in events:
