@@ -14,6 +14,7 @@ from utils.constants import (
     MAX_FLICKER_DARKNESS,
     MAX_FLICKER_DURATION,
     MAX_FLICKER_INTERVAL,
+    SCANLINE_SPEED,
 )
 
 
@@ -22,6 +23,8 @@ class EffectManager:
 
     def __init__(self) -> None:
         self.scanline_surface: pygame.Surface = self.generate_scanlines()
+        self.roll_offset: int = 0
+        self.roll_accum: float = 0.0
         self.flicker_surface: pygame.Surface = self.generate_flicker()
         self.flicker_alpha: int = 0
         self.flicker_timer: float = 0.0
@@ -30,6 +33,8 @@ class EffectManager:
         self.next_flicker_at: float = random.uniform(MIN_FLICKER_INTERVAL, MAX_FLICKER_INTERVAL)
 
     def update(self, dt: float):
+        self.roll_accum = (self.roll_accum + SCANLINE_SPEED * dt) % SCREEN_HEIGHT
+        self.roll_offset = int(self.roll_accum)
         if not self.is_flickering:
            self.flicker_timer += dt
         
@@ -49,7 +54,8 @@ class EffectManager:
             self.flicker_alpha = random.randint(MIN_FLICKER_DARKNESS, MAX_FLICKER_DARKNESS)  
 
     def draw(self, screen: pygame.Surface):
-        screen.blit(self.scanline_surface, ORIGIN)
+        screen.blit(self.scanline_surface, (0, self.roll_offset))
+        screen.blit(self.scanline_surface, (0, (self.roll_offset - SCREEN_HEIGHT)))
 
         self.flicker_surface.set_alpha(self.flicker_alpha)
         screen.blit(self.flicker_surface, ORIGIN)
