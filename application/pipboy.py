@@ -83,6 +83,7 @@ class PipBoy:
         self.dt = self.clock.tick(self.framerate) / 1000
         self.gps_manager.update_position(self.data.get("GPS"))
         self.screen_manager.update(self.dt)
+        self.effect_manager.update(self.dt)
 
     def render(self) -> None:
         """Renders the current screen to the display. First clears the screen by filling it with a black background,

@@ -54,9 +54,15 @@ TYPEWRITER_CURSOR_SYMBOL: str = "\u2588"
 # Effect Constants
 SCANLINE_SPACING: int = 2
 SCANLINE_COLOR: tuple[int, int, int, int] = (0, 0, 0, 35)
-
+MIN_FLICKER_DARKNESS: int = 15
+MAX_FLICKER_DARKNESS: int = 50
+MIN_FLICKER_DURATION: float =  0.03
+MAX_FLICKER_DURATION: float =  0.12
+MIN_FLICKER_INTERVAL: float = 4.0
+MAX_FLICKER_INTERVAL: float = 12.0
 # Position
 ORIGIN: tuple[int, int] = (0, 0)
 
 #Characters
 TAB: str = '    '
+
