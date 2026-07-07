@@ -13,7 +13,7 @@ class Assets:
             "clock"     : pygame.font.Font("resources/fonts/monofonto.ttf", 90),
         }
 
-        self.special_images: dict[str, pygame.Surface] =  {
+        self.images: dict[str, pygame.Surface] =  {
             "Strength"      : pygame.image.load("resources/images/special/strength.png").convert_alpha(),
             "Perception"    : pygame.image.load("resources/images/special/perception.png").convert_alpha(),
             "Endurance"     : pygame.image.load("resources/images/special/endurance.png").convert_alpha(),
@@ -21,9 +21,6 @@ class Assets:
             "Intelligence"  : pygame.image.load("resources/images/special/intelligence.png").convert_alpha(),
             "Agility"       : pygame.image.load("resources/images/special/agility.png").convert_alpha(),
             "Luck"          : pygame.image.load("resources/images/special/luck.png").convert_alpha(),
-        }
-
-        self.skill_images: dict[str, pygame.Surface] = {
             "Barter"            : pygame.image.load("resources/images/skills/Barter.png").convert_alpha(),
             "Energy Weapons"    : pygame.image.load("resources/images/skills/EnergyWeapons.png").convert_alpha(),
             "Explosives"        : pygame.image.load("resources/images/skills/Explosives.png").convert_alpha(),
@@ -34,7 +31,7 @@ class Assets:
             "Repair"            : pygame.image.load("resources/images/skills/Repair.png").convert_alpha(),
             "Science"           : pygame.image.load("resources/images/skills/Science.png").convert_alpha(),
             "Sneak"             : pygame.image.load("resources/images/skills/Sneak.png").convert_alpha(),
-            "Speech"          : pygame.image.load("resources/images/skills/Speech.png").convert_alpha(),
+            "Speech"            : pygame.image.load("resources/images/skills/Speech.png").convert_alpha(),
             "Survival"          : pygame.image.load("resources/images/skills/Survival.png").convert_alpha(),
             "Unarmed"           : pygame.image.load("resources/images/skills/Unarmed.png").convert_alpha(),
         }
