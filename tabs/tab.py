@@ -7,7 +7,11 @@ from utils.constants import (
     LEFT_EDGE,
     RIGHT_EDGE,
     TOP_EDGE,
-    PIPBOY_GREEN)
+    PIPBOY_GREEN,
+    MEDIUM,
+    SCREEN_WIDTH,
+    BLACK
+)
 
 
 """
@@ -30,6 +34,9 @@ class Tab:
         self.subheader_surface: pygame.Surface = self.generate_subheader()
         self.subheader_top_edge: int = (
             TOP_EDGE + self.assets.fonts["large"].get_linesize()
+        )
+        self.subheader_bottom: int = (
+            self.subheader_top_edge + self.subheader_surface.get_height()
         )
 
     def event_handler(self, event: Event) -> None:
@@ -66,17 +73,17 @@ class Tab:
             screen (pygame.Surface): target display surface
         """
         screen.blit(self.subheader_surface, (LEFT_EDGE, self.subheader_top_edge))
+        self.draw_borders(screen)
+
         self.submenus[self.submenu_index].draw(screen)
 
     def next_submenu(self) -> None:
-        """Scrolls through different submenu items
-        """
+        """Scrolls through different submenu items"""
         self.submenu_index = (self.submenu_index + 1) % len(self.submenus)
         self.submenu_index_changed = True
 
     def previous_submenu(self) -> None:
-        """Scrolls through different submenu items
-        """
+        """Scrolls through different submenu items"""
         self.submenu_index = (self.submenu_index - 1) % len(self.submenus)
         self.submenu_index_changed = True
 
@@ -101,20 +108,25 @@ class Tab:
 
         # Blits submenu names to the subheader surface, underlined if submenu is selected
         for index, submenu in enumerate(self.submenus):
-            submenu_name: str = submenu.name
-            if self.submenu_index == index:
-                self.assets.fonts["medium"].set_underline(True)
-                tab_name_surface = self.assets.fonts["medium"].render(
-                    submenu_name, True, PIPBOY_GREEN
-                )
-                self.assets.fonts["medium"].set_underline(False)
-            else:
-                tab_name_surface = self.assets.fonts["medium"].render(
-                    submenu_name, True, PIPBOY_GREEN
-                )
-            tab_name_rect = tab_name_surface.get_rect(midtop=(spacing * (index + 1), 0))
-            header_surface.blit(tab_name_surface, tab_name_rect)
+            highlighted = index == self.submenu_index
+            submenu_name_surf = self.assets.fonts[MEDIUM].render(
+                submenu.name, True, BLACK if highlighted else PIPBOY_GREEN
+            )
+            submenu_name_rect = submenu_name_surf.get_rect(
+                midtop=(spacing * (index + 1), 0)
+            )
+            if highlighted:
+                pygame.draw.rect(header_surface, PIPBOY_GREEN, submenu_name_rect)
+            header_surface.blit(submenu_name_surf, submenu_name_rect)
 
         # Returns completed subheader surface
         header_surface = header_surface.convert_alpha()
         return header_surface
+
+    def draw_borders(self, screen: pygame.Surface) -> None:
+        pygame.draw.line(
+            screen,
+            PIPBOY_GREEN,
+            (0, self.subheader_bottom),
+            (SCREEN_WIDTH, self.subheader_bottom),
+        )

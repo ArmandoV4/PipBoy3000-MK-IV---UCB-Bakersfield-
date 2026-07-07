@@ -17,12 +17,12 @@ class Status(Submenu):
             assets (Assets): _description_
         """
         super().__init__(assets)
-        self.name: str = "STATUS"
+        self.name: str = "Status"
         self.current_time: datetime.datetime = datetime.datetime.now()
         self.format_24hr: bool = False
         self.clock_midtop_coordinates: tuple[int, int] = (
-            (RIGHT_EDGE - LEFT_EDGE) // 2,
-            (BOTTOM_EDGE - self.working_area_edge) // 2,
+        LEFT_EDGE + (RIGHT_EDGE - LEFT_EDGE) // 2,
+        (BOTTOM_EDGE - self.working_area_edge) // 2,
         )
 
     def event_handler(self, event: pygame.event.Event) -> None:

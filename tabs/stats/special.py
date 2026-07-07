@@ -2,14 +2,26 @@ import pygame
 from pygame.event import Event
 from resources.assets import Assets
 from tabs.submenu import Submenu
-from utils.constants import LEFT_EDGE, PIPBOY_GREEN
+from utils.constants import (
+    LEFT_EDGE, 
+    PIPBOY_GREEN,
+    BLACK, 
+    SMALL,
+    MEDIUM,
+    DIVIDER_X,
+    DESC_TOP, 
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    ORIGIN, 
+    TAB
+)
 from utils.events import SCROLL_UP, SCROLL_DOWN
 
 
 class Special(Submenu):
     def __init__(self, assets: Assets) -> None:
         super().__init__(assets)
-        self.name: str = "Special"
+        self.name: str = "SPECIAL"
         self.stats: list[dict[str, str]] = [
             {
                 "name": "Strength",
@@ -57,7 +69,7 @@ class Special(Submenu):
             self.scroll_up(self.stats)
 
     def draw(self, screen: pygame.Surface) -> None:
-        screen.blit(self.special_surface, (LEFT_EDGE, self.working_area_edge))
+        screen.blit(self.special_surface, ORIGIN)
 
     def update(self, dt: float) -> None:
         if self.menu_index_changed:
@@ -65,80 +77,46 @@ class Special(Submenu):
             self.menu_index_changed = False
 
     def generate_special_surface(self) -> pygame.Surface:
-        self.special_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        line_spacing: int = self.assets.fonts["medium"].get_linesize()
-        desc_line_height = self.assets.fonts['small'].get_linesize()
-        max_width_size: int = max(
-            self.assets.fonts["medium"].size(stat["name"])[0] for stat in self.stats
-        )
-        tab_size: int = self.assets.fonts['medium'].size("   ")[0]
-        special_edge = max_width_size + 2 * tab_size
-        desc_left = special_edge + tab_size
-        right_panel_center_x = special_edge + (self.width - special_edge) // 2
-        max_desc_width = self.width - desc_left - tab_size
-        bottom_padding = line_spacing // 2
+        special_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
 
+        # Calculate spacing and sizes
+        line_spacing: int = self.assets.fonts[MEDIUM].get_linesize()
+        tab_size: int = self.assets.fonts[MEDIUM].size(TAB)[0]
+        desc_line_height: int = self.assets.fonts[SMALL].get_linesize()
+        desc_left = DIVIDER_X + tab_size
+        right_panel_center_x = DIVIDER_X + (SCREEN_WIDTH - DIVIDER_X) // 2
+        max_desc_width = SCREEN_WIDTH - desc_left - tab_size
+        
         for index, stat in enumerate(self.stats):
-            if index == self.menu_index:
-                stat_text = self.assets.fonts['medium'].render(
-                    ">" + stat["name"], True, PIPBOY_GREEN
-                )
-                stat_image = self.assets.images[stat['name']]
-                stat_image = self.shift_image_hue(stat_image, PIPBOY_GREEN)
+            highlighted = index == self.menu_index
+            top_edge = self.working_area_edge + (index * line_spacing)
 
-                desc_lines = self.wrap_text(self.assets.fonts['small'], stat['desc'], max_desc_width)
-                desc_height = len(desc_lines) * desc_line_height
-                desc_top = (self.height - desc_height - bottom_padding)
-                stat_image_rect = stat_image.get_rect(center = (right_panel_center_x, desc_top // 2 ))
+            name_surf = self.assets.fonts[MEDIUM].render(stat['name'], True, BLACK if highlighted else PIPBOY_GREEN)
+            name_rect = name_surf.get_rect(topleft = (LEFT_EDGE, top_edge))
+
+            level_surf = self.assets.fonts[MEDIUM].render(stat['level'], True, BLACK if highlighted else PIPBOY_GREEN)
+            level_rect = level_surf.get_rect(topright = (DIVIDER_X, self.working_area_edge + (index * line_spacing)))
+            
+            highlight_rect = name_rect.union(level_rect)
+
+            if highlighted:
+                stat_image = self.shift_image_hue(self.assets.special_images[stat['name']], PIPBOY_GREEN)
+                desc_lines = self.wrap_text(self.assets.fonts[SMALL], stat['desc'], max_desc_width)
+                desc_top = DESC_TOP
+                stat_image_rect = stat_image.get_rect(center=(right_panel_center_x, (self.working_area_edge + desc_top) // 2))
 
                 for line_index, line in enumerate(desc_lines):
-                    desc_surface = self.assets.fonts['small'].render(line, True, PIPBOY_GREEN)
-                    desc_rect = desc_surface.get_rect(topleft = (desc_left, desc_top + (line_index * desc_line_height)))
-                    self.special_surface.blit(desc_surface, desc_rect)
-                
-                
-                self.special_surface.blit(stat_text, (tab_size, line_spacing * index))
-                self.special_surface.blit(stat_image, stat_image_rect)
-                pygame.draw.line(
-                    self.special_surface,
-                    PIPBOY_GREEN,
-                    (special_edge, 0),
-                    (special_edge, self.height),
-                )
-                
-            else:
-                stat_text = self.assets.fonts['medium'].render(
-                    stat["name"], True, PIPBOY_GREEN
-                )
-                self.special_surface.blit(stat_text, (tab_size, line_spacing * index))
-        self.special_surface = self.special_surface.convert_alpha()
+                    desc_surface = self.assets.fonts[SMALL].render(line, True, PIPBOY_GREEN)
+                    desc_rect = desc_surface.get_rect(topleft=(desc_left, desc_top + line_index * desc_line_height))
+                    special_surf.blit(desc_surface, desc_rect)
 
-        return self.special_surface
+                pygame.draw.rect(special_surf, PIPBOY_GREEN, highlight_rect)
+                pygame.draw.line(special_surf, PIPBOY_GREEN, (DIVIDER_X, desc_top), (SCREEN_WIDTH, desc_top))
+                special_surf.blit(stat_image, stat_image_rect)
 
-    def shift_image_hue(
-        self, image: pygame.Surface, color: tuple[int, int, int]
-    ) -> pygame.Surface:
-        shifted = image.copy()
-        tint = pygame.Surface(image.get_size()).convert_alpha()
-        tint.fill(color)
-        shifted.blit(tint, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
-        return shifted
-    
-    def wrap_text(self, font: pygame.font.Font, text: str, max_width: int) -> list[str]:
-        words: list[str] = text.split(' ')
-        lines: list[str] = []
-        current_line: str = ''
+            special_surf.blit(name_surf, name_rect)
+            special_surf.blit(level_surf, level_rect)
+            self.draw_divider(special_surf)
+            special_surf.convert_alpha()
 
-        for word in words:
-            test_line: str = (current_line + ' ' + word).strip()
-            if font.size(test_line)[0] <= max_width:
-                current_line = test_line
-            else:
-                if current_line:
-                    lines.append(current_line)
-                current_line = word
-        
-        if current_line:
-            lines.append(current_line)
-        
-        return lines
+        return special_surf

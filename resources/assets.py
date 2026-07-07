@@ -13,13 +13,28 @@ class Assets:
             "clock"     : pygame.font.Font("resources/fonts/monofonto.ttf", 90),
         }
 
-        self.images: dict[str, pygame.Surface] =  {
-            "start"         : pygame.image.load("resources/images/pipboystart.png"),
-            "Strength"      : pygame.image.load("resources/images/strength.png").convert_alpha(),
-            "Perception"    : pygame.image.load("resources/images/perception.png").convert_alpha(),
-            "Endurance"     : pygame.image.load("resources/images/endurance.png").convert_alpha(),
-            "Charisma"      : pygame.image.load("resources/images/charisma.png").convert_alpha(),
-            "Intelligence"  : pygame.image.load("resources/images/intelligence.png").convert_alpha(),
-            "Agility"       : pygame.image.load("resources/images/agility.png").convert_alpha(),
-            "Luck"          : pygame.image.load("resources/images/luck.png").convert_alpha()
+        self.special_images: dict[str, pygame.Surface] =  {
+            "Strength"      : pygame.image.load("resources/images/special/strength.png").convert_alpha(),
+            "Perception"    : pygame.image.load("resources/images/special/perception.png").convert_alpha(),
+            "Endurance"     : pygame.image.load("resources/images/special/endurance.png").convert_alpha(),
+            "Charisma"      : pygame.image.load("resources/images/special/charisma.png").convert_alpha(),
+            "Intelligence"  : pygame.image.load("resources/images/special/intelligence.png").convert_alpha(),
+            "Agility"       : pygame.image.load("resources/images/special/agility.png").convert_alpha(),
+            "Luck"          : pygame.image.load("resources/images/special/luck.png").convert_alpha(),
+        }
+
+        self.skill_images: dict[str, pygame.Surface] = {
+            "Barter"            : pygame.image.load("resources/images/skills/Barter.png").convert_alpha(),
+            "Energy Weapons"    : pygame.image.load("resources/images/skills/EnergyWeapons.png").convert_alpha(),
+            "Explosives"        : pygame.image.load("resources/images/skills/Explosives.png").convert_alpha(),
+            "Guns"              : pygame.image.load("resources/images/skills/Guns.png").convert_alpha(),
+            "Lockpick"          : pygame.image.load("resources/images/skills/Lockpick.png").convert_alpha(),
+            "Medicine"          : pygame.image.load("resources/images/skills/Medicine.png").convert_alpha(),
+            "Melee Weapons"     : pygame.image.load("resources/images/skills/MeleeWeapons.png").convert_alpha(),
+            "Repair"            : pygame.image.load("resources/images/skills/Repair.png").convert_alpha(),
+            "Science"           : pygame.image.load("resources/images/skills/Science.png").convert_alpha(),
+            "Sneak"             : pygame.image.load("resources/images/skills/Sneak.png").convert_alpha(),
+            "Speech"          : pygame.image.load("resources/images/skills/Speech.png").convert_alpha(),
+            "Survival"          : pygame.image.load("resources/images/skills/Survival.png").convert_alpha(),
+            "Unarmed"           : pygame.image.load("resources/images/skills/Unarmed.png").convert_alpha(),
         }

@@ -24,7 +24,7 @@ class WorldMap(Submenu):
         temp_surf = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         lat = self.gps_manager.current_lat
         long = self.gps_manager.current_long
-        coords: str = f'Current Position | Lat: {lat:.4f}, Long{long:.4f}'
+        coords: str = f'Current Position | Lat: {lat:.4f}, Long: {long:.4f}'
         coords_surface = self.assets.fonts['small'].render(coords, True, PIPBOY_GREEN)
         coords_rect = coords_surface.get_rect(midbottom = (self.width//2, self.height))
         temp_surf.blit(coords_surface, coords_rect)

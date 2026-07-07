@@ -35,8 +35,6 @@ class ArduinoManager:
         gps: list[str] = []
         while self.serial_monitor.in_waiting:
             serial_line = self.serial_monitor.readline().decode().strip()
-            print(serial_line)
-
             if serial_line.startswith(self.input_filter):
                 inputs.append(serial_line.removeprefix(self.input_filter))
             elif serial_line.startswith(self.location_filter):
@@ -46,7 +44,5 @@ class ArduinoManager:
             "GPS" : gps,
             "INPUTS" : inputs,
         }
-
-        print(data)
         return data 
     
