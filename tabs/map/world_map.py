@@ -1,7 +1,7 @@
 import pygame
 from pygame import Surface
 from resources.assets import Assets
-from application.gps_manager import GPSManager
+from managers.gps_manager import GPSManager
 from tabs.submenu import Submenu
 from utils.constants import LEFT_EDGE, PIPBOY_GREEN
 

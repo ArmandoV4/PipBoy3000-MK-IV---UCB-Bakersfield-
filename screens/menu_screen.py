@@ -9,7 +9,7 @@ from tabs.inv.inv import InventoryTab
 from tabs.map.map import MapTab
 from tabs.radio.radio import RadioTab
 from tabs.stats.stats import StatsTab
-from application.gps_manager import GPSManager
+from application.managers import Managers
 from utils.events import NEXT_MENU, PREVIOUS_MENU
 from utils.constants import (
     SCREEN_WIDTH,
@@ -32,7 +32,7 @@ from utils.constants import (
 """
 
 class MenuScreen(Screen):
-    def __init__(self, assets: Assets, gps_manager: GPSManager) -> None:
+    def __init__(self, assets: Assets, managers: Managers) -> None:
         """ Initializes the different tabs, creates index tracking variables, and generates the header
 
         Args:
@@ -40,12 +40,12 @@ class MenuScreen(Screen):
             gps_manager (GPSManager) gpsmanager instance passed through by the pipboy only meant for the MapTab
         """
         super().__init__(assets)
-        self.gps_manager = gps_manager
+        self.managers = managers
         self.tabs: list[Tab] = [
             StatsTab(self.assets),
             InventoryTab(self.assets),
             DataTab(self.assets),
-            MapTab(self.assets, self.gps_manager),
+            MapTab(self.assets, self.managers),
             RadioTab(self.assets),
         ]
         self.menu_index: int = 0
