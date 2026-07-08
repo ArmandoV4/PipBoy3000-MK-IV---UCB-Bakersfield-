@@ -1,3 +1,4 @@
+import pygame
 from resources.assets import Assets
 from application.managers import Managers
 from tabs.tab import Tab
@@ -11,4 +12,4 @@ class MapTab(Tab):
         self.submenus: list[Submenu] = [
             WorldMap(self.assets, managers.gps_manager)
         ]
-        self.subheader_surface = self.generate_subheader()
+        self.subheader_surfaces: dict[int, pygame.Surface] = {self.submenu_index : self.generate_subheader()}

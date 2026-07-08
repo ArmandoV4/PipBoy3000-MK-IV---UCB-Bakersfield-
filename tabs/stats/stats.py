@@ -1,3 +1,4 @@
+import pygame
 from resources.assets import Assets
 from tabs.tab import Tab
 from tabs.submenu import Submenu
@@ -20,4 +21,4 @@ class StatsTab(Tab):
             Skills(self.assets),
             Perks(self.assets),
             ]
-        self.subheader_surface = self.generate_subheader()
+        self.subheader_surfaces: dict[int, pygame.Surface] = {self.submenu_index : self.generate_subheader()}

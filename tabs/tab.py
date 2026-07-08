@@ -31,12 +31,12 @@ class Tab:
         self.submenu_index: int = 0
         self.submenu_index_changed: bool = False
         self.submenus: list[Submenu] = []
-        self.subheader_surface: pygame.Surface = self.generate_subheader()
+        self.subheader_surfaces: dict[int, pygame.Surface] = {self.submenu_index : self.generate_subheader()}
         self.subheader_top_edge: int = (
             TOP_EDGE + self.assets.fonts["large"].get_linesize()
         )
         self.subheader_bottom: int = (
-            self.subheader_top_edge + self.subheader_surface.get_height()
+            self.subheader_top_edge + self.subheader_surfaces[self.submenu_index].get_height()
         )
 
     def event_handler(self, event: Event) -> None:
@@ -62,7 +62,8 @@ class Tab:
             dt (float): time between frames in seconds
         """
         if self.submenu_index_changed:
-            self.subheader_surface = self.generate_subheader()
+            if self.submenu_index not in self.subheader_surfaces:
+                self.subheader_surfaces[self.submenu_index] = self.generate_subheader()
             self.submenu_index_changed = False
         self.submenus[self.submenu_index].update(dt)
 
@@ -72,7 +73,9 @@ class Tab:
         Args:
             screen (pygame.Surface): target display surface
         """
-        screen.blit(self.subheader_surface, (LEFT_EDGE, self.subheader_top_edge))
+        subheader_surface = self.subheader_surfaces.get(self.submenu_index)
+        if subheader_surface:
+            screen.blit(subheader_surface, (LEFT_EDGE, self.subheader_top_edge))
         self.draw_borders(screen)
 
         self.submenus[self.submenu_index].draw(screen)

@@ -50,7 +50,7 @@ class MenuScreen(Screen):
         ]
         self.menu_index: int = 0
         self.index_changed: bool = False
-        self.header_surface: pygame.Surface = self.generate_header()
+        self.header_surfaces: dict[int, pygame.Surface] = {self.menu_index : self.generate_header()}
         self.footer_surface: pygame.Surface = self.generate_footer()
         self.border_surface: pygame.Surface = self.generate_border()
         self.cpu_dt: float = 0.0
@@ -82,7 +82,8 @@ class MenuScreen(Screen):
         """
         self.cpu_dt += dt
         if self.index_changed:
-            self.header_surface = self.generate_header()
+            if self.menu_index not in self.header_surfaces:
+                self.header_surfaces[self.menu_index] = self.generate_header()
             self.index_changed = False
 
         if self.cpu_dt >= CPU_INTERVAL:
@@ -97,12 +98,15 @@ class MenuScreen(Screen):
         Args:
             screen (pygame.Surface): display surface initialized by the PipBoy
         """
-        screen.blit(self.border_surface, (0, 0))
-        screen.blit(self.header_surface, (LEFT_EDGE, TOP_EDGE))
+        header_surface = self.header_surfaces.get(self.menu_index)
+        
+        if header_surface:
+            screen.blit(header_surface, (LEFT_EDGE, TOP_EDGE))
         screen.blit(self.footer_surface, (LEFT_EDGE, BOTTOM_EDGE))
         pygame.draw.line(screen, PIPBOY_GREEN, (0, BOTTOM_EDGE), (SCREEN_WIDTH, BOTTOM_EDGE))
+        screen.blit(self.border_surface, (0, 0))
         self.tabs[self.menu_index].draw(screen)
-
+        
     def next_menu(self) -> None:
         """ Scrolls to the next menu, loops around once it reaches the end
         """
