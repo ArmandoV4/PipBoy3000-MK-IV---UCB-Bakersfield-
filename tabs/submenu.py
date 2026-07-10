@@ -1,5 +1,6 @@
 import pygame
 from collections.abc import Sized
+from abc import ABC
 from resources.assets import Assets
 from utils.constants import (
     TOP_EDGE,
@@ -21,7 +22,7 @@ from utils.constants import (
 """
 
 
-class Submenu:
+class Submenu(ABC):
     def __init__(self, assets: Assets) -> None:
         """Initializes universal class variables.
 
@@ -56,7 +57,7 @@ class Submenu:
             dt (float): time between frames in seconds
         """
         pass
-
+    
     def draw(self, screen: pygame.Surface) -> None:
         """Draw method meant to be implemented in all insances of a submenu
 

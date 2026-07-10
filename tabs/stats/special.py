@@ -4,8 +4,16 @@ from resources.assets import Assets
 from tabs.submenu import Submenu
 from utils.constants import (
     ORIGIN,
+    PIPBOY_GREEN,
+    BLACK,
+    MEDIUM,
+    DIVIDER_X,
+    BOTTOM_EDGE,
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
 )
-from utils.events import SCROLL_UP, SCROLL_DOWN
+from widgets.widget import Widget
+from widgets.menu_selector import MenuSelector
 
 
 class Special(Submenu):
@@ -49,19 +57,53 @@ class Special(Submenu):
                 "desc": "Luck is a measurement of your general good fortune, and affects the recharge rate of Critical Hits.",
             },
         ]
-        self.special_surface: pygame.Surface = self.generate_data_surface(self.stats)
+        self.widgets: list[Widget] = [
+            MenuSelector(
+                pygame.Rect(
+                    0,
+                    self.working_area_edge,
+                    DIVIDER_X,
+                    BOTTOM_EDGE - self.working_area_edge,
+                ),
+                assets,
+                self.generate_labels(),
+                self.generate_levels(),
+                self.menu_index,
+                MEDIUM,
+                PIPBOY_GREEN,
+                BLACK,
+            )
+        ]
+        self.special_surface: pygame.Surface = self.generate_surf()
 
     def event_handler(self, event: Event) -> None:
-        if event.type == SCROLL_DOWN:
-            self.scroll_down(self.stats)
+        for widget in self.widgets:
+            widget.event_handler(event)
 
-        elif event.type == SCROLL_UP:
-            self.scroll_up(self.stats)
+    def update(self, dt: float) -> None:
+        surface_changed = False
+
+        for widget in self.widgets:
+            was_changed = widget.changed
+            widget.update(dt)
+
+            if was_changed:
+                surface_changed = True
+
+        if surface_changed:
+            self.special_surface = self.generate_surf()
 
     def draw(self, screen: pygame.Surface) -> None:
         screen.blit(self.special_surface, ORIGIN)
 
-    def update(self, dt: float) -> None:
-        if self.menu_index_changed:
-            self.special_surface = self.generate_data_surface(self.stats)
-            self.menu_index_changed = False
+    def generate_labels(self) -> list[str]:
+        return [item.get("name", "") for item in self.stats]
+
+    def generate_levels(self) -> list[str]:
+        return [item.get("level", "") for item in self.stats]
+
+    def generate_surf(self) -> pygame.Surface:
+        surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        for widget in self.widgets:
+            surf.blit(widget.surf, widget.rect.topleft)
+        return surf
