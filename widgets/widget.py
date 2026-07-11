@@ -14,7 +14,9 @@ class Widget(ABC):
         pass
 
     def update(self, dt: float) -> None:
-        pass
+        if self.changed:
+            self.surf = self.generate_surf()
+            self.changed = False
     
     @abstractmethod
     def generate_surf(self) -> pygame.Surface:

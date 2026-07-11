@@ -85,8 +85,8 @@ class MenuSelector(Widget):
             )
 
             selector_surf.blit(label_surf, label_rect)
-        selector_surf = selector_surf.convert_alpha()
-        return selector_surf
+  
+        return selector_surf.convert_alpha()
 
     def update_scroll(self) -> None:
         max_visible: int = max(1, self.rect.height // self.line_spacing)

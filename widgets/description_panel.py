@@ -13,11 +13,10 @@ class DescriptionPanel(Widget):
         self.indent_size = self.assets.fonts[font_key].size(TAB)[0]
         self.desc_line_height: int = self.assets.fonts[font_key].get_linesize()
         self.max_desc_width = self.rect.width - (2 * self.indent_size)
+        self.surf = self.generate_surf()
     
     def update(self, dt: float) -> None:
-        if self.changed:
-            self.surf = self.generate_surf()
-            self.changed = False
+        return super().update(dt)
     
     def generate_surf(self) -> pygame.Surface:
         desc_surf = pygame.Surface(self.rect.size, pygame.SRCALPHA)
@@ -29,8 +28,7 @@ class DescriptionPanel(Widget):
             line_rect = line_surf.get_rect(topleft = ( self.indent_size, self.desc_line_height * line_index ))
             desc_surf.blit(line_surf, line_rect)
 
-        desc_surf = desc_surf.convert_alpha()    
-        return desc_surf
+        return desc_surf.convert_alpha()    
     
     def wrap_text(self, font: pygame.font.Font, text: str, max_width: int) -> list[str]:
         words: list[str] = text.split(" ")

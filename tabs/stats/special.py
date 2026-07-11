@@ -12,11 +12,12 @@ from utils.constants import (
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
     DESC_TOP,
-    SMALL
+    SMALL,
 )
 from widgets.widget import Widget
 from widgets.menu_selector import MenuSelector
 from widgets.description_panel import DescriptionPanel
+from widgets.image_panel import ImagePanel
 
 
 class Special(Submenu):
@@ -74,17 +75,32 @@ class Special(Submenu):
             PIPBOY_GREEN,
             BLACK,
         )
- 
+
         self.description_panel = DescriptionPanel(
             pygame.Rect(
                 DIVIDER_X, DESC_TOP, SCREEN_WIDTH - DIVIDER_X, BOTTOM_EDGE - DESC_TOP
             ),
             self.assets,
             self.data[self.menu_selector.get_selected_index()].get("desc", ""),
-            SMALL, 
-            PIPBOY_GREEN
+            SMALL,
+            PIPBOY_GREEN,
         )
-        self.widgets: list[Widget] = [self.menu_selector, self.description_panel]
+        self.image_panel = ImagePanel(
+            pygame.Rect(
+                DIVIDER_X,
+                self.working_area_edge,
+                SCREEN_WIDTH - DIVIDER_X,
+                DESC_TOP - self.working_area_edge,
+            ),
+            self.assets,
+            self.data[self.menu_selector.get_selected_index()].get("name", ""),
+            PIPBOY_GREEN,
+        )
+        self.widgets: list[Widget] = [
+            self.menu_selector,
+            self.description_panel,
+            self.image_panel,
+        ]
         self.special_surface: pygame.Surface = self.generate_surf()
 
     def event_handler(self, event: Event) -> None:
@@ -94,10 +110,11 @@ class Special(Submenu):
         surface_changed = False
         if self.menu_selector.changed:
             self.sync_description()
+            self.sync_image_path()
             surface_changed = True
-        
-        self.menu_selector.update(dt)
-        self.description_panel.update(dt)
+
+        for widget in self.widgets:
+            widget.update(dt)
 
         if surface_changed:
             self.special_surface = self.generate_surf()
@@ -120,4 +137,8 @@ class Special(Submenu):
 
     def sync_description(self) -> None:
         selected_index = self.menu_selector.get_selected_index()
-        self.description_panel.set_desc(self.data[selected_index].get("desc", ''))
+        self.description_panel.set_desc(self.data[selected_index].get("desc", ""))
+
+    def sync_image_path(self) -> None:
+        selected_index = self.menu_selector.get_selected_index()
+        self.image_panel.set_image_key(self.data[selected_index].get("name", ""))
