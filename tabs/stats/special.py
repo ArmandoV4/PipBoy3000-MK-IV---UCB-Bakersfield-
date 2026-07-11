@@ -11,16 +11,19 @@ from utils.constants import (
     BOTTOM_EDGE,
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
+    DESC_TOP,
+    SMALL
 )
 from widgets.widget import Widget
 from widgets.menu_selector import MenuSelector
+from widgets.description_panel import DescriptionPanel
 
 
 class Special(Submenu):
     def __init__(self, assets: Assets) -> None:
         super().__init__(assets)
         self.name: str = "SPECIAL"
-        self.stats: list[dict[str, str]] = [
+        self.data: list[dict[str, str]] = [
             {
                 "name": "Strength",
                 "level": "5",
@@ -57,38 +60,44 @@ class Special(Submenu):
                 "desc": "Luck is a measurement of your general good fortune, and affects the recharge rate of Critical Hits.",
             },
         ]
-        self.widgets: list[Widget] = [
-            MenuSelector(
-                pygame.Rect(
-                    0,
-                    self.working_area_edge,
-                    DIVIDER_X,
-                    BOTTOM_EDGE - self.working_area_edge,
-                ),
-                assets,
-                self.generate_labels(),
-                self.generate_levels(),
-                self.menu_index,
-                MEDIUM,
-                PIPBOY_GREEN,
-                BLACK,
-            )
-        ]
+        self.menu_selector = MenuSelector(
+            pygame.Rect(
+                0,
+                self.working_area_edge,
+                DIVIDER_X,
+                BOTTOM_EDGE - self.working_area_edge,
+            ),
+            assets,
+            self.generate_labels(),
+            self.generate_levels(),
+            MEDIUM,
+            PIPBOY_GREEN,
+            BLACK,
+        )
+ 
+        self.description_panel = DescriptionPanel(
+            pygame.Rect(
+                DIVIDER_X, DESC_TOP, SCREEN_WIDTH - DIVIDER_X, BOTTOM_EDGE - DESC_TOP
+            ),
+            self.assets,
+            self.data[self.menu_selector.get_selected_index()].get("desc", ""),
+            SMALL, 
+            PIPBOY_GREEN
+        )
+        self.widgets: list[Widget] = [self.menu_selector, self.description_panel]
         self.special_surface: pygame.Surface = self.generate_surf()
 
     def event_handler(self, event: Event) -> None:
-        for widget in self.widgets:
-            widget.event_handler(event)
+        self.menu_selector.event_handler(event)
 
     def update(self, dt: float) -> None:
         surface_changed = False
-
-        for widget in self.widgets:
-            was_changed = widget.changed
-            widget.update(dt)
-
-            if was_changed:
-                surface_changed = True
+        if self.menu_selector.changed:
+            self.sync_description()
+            surface_changed = True
+        
+        self.menu_selector.update(dt)
+        self.description_panel.update(dt)
 
         if surface_changed:
             self.special_surface = self.generate_surf()
@@ -97,13 +106,18 @@ class Special(Submenu):
         screen.blit(self.special_surface, ORIGIN)
 
     def generate_labels(self) -> list[str]:
-        return [item.get("name", "") for item in self.stats]
+        return [item.get("name", "") for item in self.data]
 
     def generate_levels(self) -> list[str]:
-        return [item.get("level", "") for item in self.stats]
+        return [item.get("level", "") for item in self.data]
 
     def generate_surf(self) -> pygame.Surface:
         surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         for widget in self.widgets:
             surf.blit(widget.surf, widget.rect.topleft)
+            pygame.draw.rect(surf, PIPBOY_GREEN, widget.rect, 1)
         return surf
+
+    def sync_description(self) -> None:
+        selected_index = self.menu_selector.get_selected_index()
+        self.description_panel.set_desc(self.data[selected_index].get("desc", ''))

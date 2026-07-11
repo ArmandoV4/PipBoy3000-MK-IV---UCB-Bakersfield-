@@ -13,7 +13,6 @@ class MenuSelector(Widget):
         assets: Assets,
         labels: list[str],
         levels: list[str] | None,
-        index: int,
         font_key: str,
         text_color: tuple[int, int, int],
         highlight_text_color: tuple[int, int, int]
@@ -23,7 +22,7 @@ class MenuSelector(Widget):
         self.levels = levels
         if levels is not None and len(labels) != len(levels):
             raise ValueError("length of levels and labels must match")
-        self.index = index
+        self.index: int = 0
         self.font_key = font_key
         self.text_color = text_color
         self.highlight_text_color = highlight_text_color
@@ -86,8 +85,6 @@ class MenuSelector(Widget):
             )
 
             selector_surf.blit(label_surf, label_rect)
-        border_rect = pygame.Rect(0, 0, self.rect.width, self.rect.height)
-        pygame.draw.rect(selector_surf, self.text_color, border_rect, 1)
         selector_surf = selector_surf.convert_alpha()
         return selector_surf
 
