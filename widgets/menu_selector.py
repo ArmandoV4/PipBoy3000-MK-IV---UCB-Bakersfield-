@@ -2,7 +2,7 @@ import pygame
 from pygame.event import Event
 from resources.assets import Assets
 from widgets.widget import Widget
-from utils.constants import TAB
+from utils.constants import INDENT_SIZE
 from utils.events import SCROLL_DOWN, SCROLL_UP
 
 
@@ -27,7 +27,7 @@ class MenuSelector(Widget):
         self.text_color = text_color
         self.highlight_text_color = highlight_text_color
         self.line_spacing: int = self.assets.fonts[font_key].get_linesize()
-        self.indent_size: int = self.assets.fonts[font_key].size(TAB)[0]
+        self.indent_size: int = INDENT_SIZE
         self.max_visible: int = max(1, self.rect.height // self.line_spacing)
         self.scroll_offset: int = 0
         self.surf = self.generate_surf()
@@ -85,8 +85,8 @@ class MenuSelector(Widget):
             )
 
             selector_surf.blit(label_surf, label_rect)
-  
-        return selector_surf.convert_alpha()
+        selector_surf = selector_surf.convert_alpha()
+        return selector_surf
 
     def update_scroll(self) -> None:
         max_visible: int = max(1, self.rect.height // self.line_spacing)

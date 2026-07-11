@@ -22,6 +22,7 @@ DIVIDER_X: int = 260
 DESC_TOP: int = 350
 BORDER_THICKNESS: int = 2
 BORDER_RADIUS: int = 5
+INDENT_SIZE: int = MARGIN
 
 # Color Palette
 PIPBOY_GREEN: tuple[int, int, int] = (2, 255, 2)
